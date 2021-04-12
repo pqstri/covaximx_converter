@@ -1,7 +1,7 @@
 require(tidyverse)
 
 # Import vertical data
-vert <- read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
+# vert <- read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
 
 trnsps <- function(vert) {
   # Name patients
