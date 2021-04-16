@@ -32,7 +32,7 @@ trnsps <- function(vert, meta) {
     mutate(., colname = str_remove(colname, "\\s*_{3}1$"))
   
   # Variable order
-  question_db <- select(vert_unic_simple, colname) %>% unique() %>% unlist()
+  question_db <- unite(meta, colname, VISIT, FORM, QUESTION) %>% .$colname
   
   # Check structure
   # table(vert$DataType) 
@@ -88,7 +88,7 @@ trnsps <- function(vert, meta) {
   db_list <- list(patient_db, string_db, long_db, float_db, date_db, partialdate_db, factor_db, bool_db)
   
   db <- purrr::reduce(db_list, left_join) %>% 
-    select(PatientCode, all_of(question_db))
+    select(PatientCode, all_of(question_db), everything())
   
   return(db)
 }
