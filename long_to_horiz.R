@@ -3,11 +3,23 @@ require(tidyverse)
 # Import vertical data
 # vert <- read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
 
+meta_db <- read.csv("Downloads/_METADATA.csv", sep = ";")
+
+custom_parser <- function(string) {
+  keys <- stringr::str_extract_all(string, "(?<=\\[).*?(?=:)", simplify = T)
+  vals <- stringr::str_extract_all(string, "(?<=:).*?(?=\\])", simplify = T)
+  names(vals) <- keys
+  return(vals)
+}
+
+meta_db$kv <- map(meta_db$DVG, custom_parser)
+
 trnsps <- function(vert) {
-  # Name patients
-  patient_db <- count(vert, PatientID) %>% select(-n)
   
-  # Remove missing
+  #### Name patients ####
+  patient_db <- count(vert, PatientCode) %>% select(-n)
+  
+  #### Remove missing ####
   vert <- filter(vert, !is.na(Value))
   
   # Check structure
@@ -16,12 +28,12 @@ trnsps <- function(vert) {
   # table(vert$Question) 
   # table(paste0(vert$VisitName, vert$FormName, vert$Question))
   
-  # Generate univocal column name
+  # Generate unique column name
   # vert$instance_short <- if_else(vert$FormInstance == 1, "", as.character(vert$FormInstance), "")
   vert_unic <- unite(vert, colname, VisitName, FormName, Question, FormInstance, sep = "___")
   
   # Keep only handy variables
-  vert_unic_simple <- select(vert_unic, PatientID, colname, DataType, Value) %>% 
+  vert_unic_simple <- select(vert_unic, PatientCode, colname, DataType, Value) %>% 
     mutate(., colname = str_remove(colname, "\\s*_{3}1$"))
   
   # Variable order
@@ -32,15 +44,14 @@ trnsps <- function(vert) {
   by_type_db <- split(as_tibble(vert_unic_simple), vert_unic_simple$DataType) %>% 
     map(~ select(., -DataType))
   
-  # Strings
+  #### Strings ####
   string_db <- spread(by_type_db$String, colname, Value, convert = T)
   
-  # Numerics
+  #### Numerics ####
   long_db <- spread(by_type_db$Long, colname, Value, convert = T)
   float_db <- spread(by_type_db$Float, colname, Value, convert = T)
   
   #### Dates ####
-  
   date_db <- mutate(by_type_db$Date, Value = as.Date(Value)) %>% 
     spread(colname, Value)
   
@@ -61,17 +72,34 @@ trnsps <- function(vert) {
   question_db <- append(question_db, new_partialdate_question_db)
   
   #### Factors ####
-  list_db <- spread(by_type_db$List, colname, Value)
+  bylab_dbs <- separate(by_type_db$List, colname, c(NA, "FORM", "QUESTION", NA), 
+           remove = F, sep = "___") %>% 
+    left_join(meta_db) %>% 
+    {split(., paste0(.$FORM, .$QUESTION))} %>% 
+    map(~ rowwise(.) %>% mutate(Value_enc = factor(Value, levels = names(kv), labels = kv)))
+  
+  list_dbs <- map(bylab_dbs, ~ spread(., colname, Value)) %>% 
+    map(~ select(., -FORM, -QUESTION, -ALIAS, -LABEL, -DATATYPE, -DECIMALS, -kv, -Value_enc, -DVG))
+  
+  factor_db <- purrr::reduce(list_dbs, left_join)
   
   #### Boolean ####
   bool_db <- mutate(by_type_db$Boolean, Value = as.logical(Value)) %>% 
     spread(colname, Value)
   
   # Gather all types
-  db_list <- list(patient_db, string_db, long_db, float_db, date_db, partialdate_db, list_db, bool_db)
+  db_list <- list(patient_db, string_db, long_db, float_db, date_db, partialdate_db, factor_db, bool_db)
   
   db <- purrr::reduce(db_list, left_join) %>% 
-    select(PatientID, all_of(question_db))
+    select(PatientCode, all_of(question_db))
   
   return(db)
 }
+
+# vert<-read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
+# db <- trnsps(vert)
+
+
+
+
+
