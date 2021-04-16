@@ -69,14 +69,16 @@ trnsps <- function(vert, meta) {
   #### Factors ####
   bylab_dbs <- separate(by_type_db$List, colname, c(NA, "FORM", "QUESTION", NA), 
            remove = F, sep = "___") %>% 
-    left_join(meta_db) %>% 
+    left_join(meta) %>% 
     {split(., paste0(.$FORM, .$QUESTION))} %>% 
-    map(~ rowwise(.) %>% mutate(Value_enc = factor(Value, levels = names(kv), labels = kv)))
+    map(~ rowwise(.) %>% 
+          mutate(not_enc_Value = Value,
+                 Value = factor(Value, levels = names(kv), labels = kv)))
   
-  list_dbs <- map(bylab_dbs, ~ spread(., colname, Value_enc)) %>% 
-    map(~ select(., -FORM, -QUESTION, -ALIAS, -LABEL, -DATATYPE, -DECIMALS, -kv, -Value, -DVG))
+  list_dbs <- map(bylab_dbs, ~ spread(., colname, Value)) %>% 
+    map(~ select(., -FORM, -QUESTION, -ALIAS, -LABEL, -DATATYPE, -DECIMALS, -kv, -not_enc_Value, -DVG))
   
-  factor_db <- purrr::reduce(list_dbs, left_join) %>% rename(Value = Value_enc)
+  factor_db <- purrr::reduce(list_dbs, left_join)
   
   #### Boolean ####
   bool_db <- mutate(by_type_db$Boolean, Value = as.logical(Value)) %>% 
