@@ -73,10 +73,10 @@ trnsps <- function(vert, meta) {
     {split(., paste0(.$FORM, .$QUESTION))} %>% 
     map(~ rowwise(.) %>% mutate(Value_enc = factor(Value, levels = names(kv), labels = kv)))
   
-  list_dbs <- map(bylab_dbs, ~ spread(., colname, Value)) %>% 
-    map(~ select(., -FORM, -QUESTION, -ALIAS, -LABEL, -DATATYPE, -DECIMALS, -kv, -Value_enc, -DVG))
+  list_dbs <- map(bylab_dbs, ~ spread(., colname, Value_enc)) %>% 
+    map(~ select(., -FORM, -QUESTION, -ALIAS, -LABEL, -DATATYPE, -DECIMALS, -kv, -Value, -DVG))
   
-  factor_db <- purrr::reduce(list_dbs, left_join)
+  factor_db <- purrr::reduce(list_dbs, left_join) %>% rename(Value = Value_enc)
   
   #### Boolean ####
   bool_db <- mutate(by_type_db$Boolean, Value = as.logical(Value)) %>% 
