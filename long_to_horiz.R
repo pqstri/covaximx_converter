@@ -1,20 +1,15 @@
 require(tidyverse)
 
-# Import vertical data
-# vert <- read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
-
-meta_db <- read.csv("Downloads/_METADATA.csv", sep = ";")
-
-custom_parser <- function(string) {
-  keys <- stringr::str_extract_all(string, "(?<=\\[).*?(?=:)", simplify = T)
-  vals <- stringr::str_extract_all(string, "(?<=:).*?(?=\\])", simplify = T)
-  names(vals) <- keys
-  return(vals)
-}
-
-meta_db$kv <- map(meta_db$DVG, custom_parser)
-
-trnsps <- function(vert) {
+trnsps <- function(vert, meta) {
+  
+  custom_parser <- function(string) {
+    keys <- stringr::str_extract_all(string, "(?<=\\[).*?(?=:)", simplify = T)
+    vals <- stringr::str_extract_all(string, "(?<=:).*?(?=\\])", simplify = T)
+    names(vals) <- keys
+    return(vals)
+  }
+  
+  meta$kv <- map(meta$DVG, custom_parser)
   
   #### Name patients ####
   patient_db <- count(vert, PatientCode) %>% select(-n)
@@ -95,9 +90,6 @@ trnsps <- function(vert) {
   
   return(db)
 }
-
-# vert<-read.csv("Downloads/_CLINICAL_DATA.csv", sep = ";", na.strings = ".")
-# db <- trnsps(vert)
 
 
 
