@@ -32,7 +32,7 @@ trnsps <- function(vert, meta) {
     mutate(., colname = str_remove(colname, "\\s*_{3}1$"))
   
   # Variable order
-  question_db <- unite(meta, colname, VISIT, FORM, QUESTION) %>% .$colname
+  question_db <- unite(meta, colname, VISIT, FORM, QUESTION, sep = "___") %>% .$colname
   
   # Check structure
   # table(vert$DataType) 
