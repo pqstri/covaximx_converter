@@ -16,6 +16,7 @@ trnsps <- function(vert, meta) {
   
   #### Remove missing ####
   vert <- filter(vert, !is.na(Value))
+  vert <- rename_all(vert, trimws)
   
   # Check structure
   # table(vert$VisitName)
@@ -33,7 +34,7 @@ trnsps <- function(vert, meta) {
   
   # Variable order
   question_db <- unite(meta, colname, VISIT, FORM, QUESTION, sep = "___", remove = F) %>% 
-    .$colname %>% trimws()
+    .$colname %>% trimws() %>% map(~paste0(., c("", paste0("___", 1:10)))) %>% flatten_chr()
   
   # Check structure
   # table(vert$DataType) 
@@ -88,7 +89,9 @@ trnsps <- function(vert, meta) {
   # Gather all types
   db_list <- list(patient_db, string_db, long_db, float_db, date_db, partialdate_db, factor_db, bool_db)
   
-  db <- purrr::reduce(db_list, left_join) #%>% select(order(names(.))) %>% select(PatientCode, any_of(question_db), everything())
+  db <- purrr::reduce(db_list, left_join) %>% 
+    select(order(names(.))) %>% 
+    select(PatientCode, any_of(question_db), everything())
   
   return(db)
 }
