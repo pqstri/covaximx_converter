@@ -9,6 +9,7 @@ do_magic <- function() {
   library(Hmisc)
   library(tidyverse)
   library(haven)
+  library(openxlsx)
   
   #read Data
   BASELINE=read.csv("BASELINE.csv", header=TRUE, sep=";")
