@@ -12,6 +12,7 @@ do_magic <- function() {
   library(openxlsx)
   
   #read Data
+  cat("\n - Reading *.csv")
   BASELINE=read.csv("BASELINE.csv", header=TRUE, sep=";")
   CRITERIA=read.csv("CRITERIA.csv", header=TRUE, sep=";")
   MS_HISTORY=read.csv("MS_HISTORY.csv", header=TRUE, sep=";")
@@ -29,6 +30,7 @@ do_magic <- function() {
   
   
   #setting factors
+  cat("\n - Setting cathegorical variables *.csv")
   BASELINE$SEX=factor(BASELINE$SEX,levels=c("1","2"))
   BASELINE$ETHNIA=factor(BASELINE$ETHNIA,levels=c("1","2","3","4"))
   BASELINE$EMPL=factor(BASELINE$EMPL,levels=c("1","2","3","4","5","6","7","8","9","10"))
@@ -107,6 +109,7 @@ do_magic <- function() {
   ADV_EV$AE_SER=factor(ADV_EV$AE_SER,levels=c("0","1"))
   
   #setting factor levels
+  cat("\n - converting labels *.csv")
   levels(BASELINE$SEX)=c("male","female")
   levels(BASELINE$ETHNIA)=c("caucasian","black or african-american","asian","other")
   levels(BASELINE$EMPL)=c("any or not employed","workman ","office clerk","physician","nurse","healthcare assistant","unfit for work ","student","retired","other")
@@ -367,35 +370,39 @@ do_magic <- function() {
   
   
   # check vert
-  count(CRITERIA, PatientCode, name = "c") %>% count(c)
-  count(BASELINE, PatientCode, name = "c") %>% count(c)
-  count(MS_HISTORY, PatientCode, name = "c") %>% count(c)
-  count(COM_ALLERGY, PatientCode, name = "c") %>% count(c)
-  count(MED_VAX, PatientCode, name = "c") %>% count(c)
-  count(PRIOR_COVID, PatientCode, name = "c") %>% count(c)
-  count(V_DAY, PatientCode, name = "c") %>% count(c)
-  count(BLOOD, PatientCode, name = "c") %>% count(c)
-  count(TC_VAX, PatientCode, name = "c") %>% count(c)
-  count(FU_1M, PatientCode, name = "c") %>% count(c)
-  count(TC_18M, PatientCode, name = "c") %>% count(c)
-  count(COVID, PatientCode, name = "c") %>% count(c)
-  
-  count(MEDICATIONS, PatientCode, name = "c") %>% count(c)
-  count(ADV_EV, PatientCode, name = "c") %>% count(c)
+  # count(CRITERIA, PatientCode, name = "c") %>% count(c)
+  # count(BASELINE, PatientCode, name = "c") %>% count(c)
+  # count(MS_HISTORY, PatientCode, name = "c") %>% count(c)
+  # count(COM_ALLERGY, PatientCode, name = "c") %>% count(c)
+  # count(MED_VAX, PatientCode, name = "c") %>% count(c)
+  # count(PRIOR_COVID, PatientCode, name = "c") %>% count(c)
+  # count(V_DAY, PatientCode, name = "c") %>% count(c)
+  # count(BLOOD, PatientCode, name = "c") %>% count(c)
+  # count(TC_VAX, PatientCode, name = "c") %>% count(c)
+  # count(FU_1M, PatientCode, name = "c") %>% count(c)
+  # count(TC_18M, PatientCode, name = "c") %>% count(c)
+  # count(COVID, PatientCode, name = "c") %>% count(c)
+  # 
+  # count(MEDICATIONS, PatientCode, name = "c") %>% count(c)
+  # count(ADV_EV, PatientCode, name = "c") %>% count(c)
   
   # horizontalize
   FU_1M <- dplyr::rename(FU_1M, 
                          RELAPSE_DATE_FU_1M = RELAPSE_DATE,
                          RELAPSE_ACT_FU_1M = RELAPSE_ACT)
   
+  silent_full_join <- function(x, y) {suppressMessages(full_join(x, y))} 
+  
+  cat("\n - Merging")
   horiz <- list(BASELINE, MS_HISTORY, COM_ALLERGY, MED_VAX, PRIOR_COVID, V_DAY, BLOOD, TC_VAX, FU_1M, CRITERIA) %>% 
-    purrr::map(~ select(., -c("PatientID", "PatientStatus", "VisitID", "VisitCode", 
+    purrr::map(~ select(., -c("PatientStatus", "VisitID", "VisitCode", 
                               "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
                               "FormInstance", "LastUpdate"))) %>% 
-    purrr::reduce(full_join)
+    purrr::reduce(silent_full_join)
   
   horiz <- mutate_if(horiz, is.numeric, ~ haven::labelled(., label = attr(., "label")))
   
+  cat("\n  DONE!")
   return(horiz)
 }
 
