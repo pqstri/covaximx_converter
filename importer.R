@@ -1,9 +1,10 @@
 # set wd
 
-do_magic <- function() {
+do_magic <- function(add_empty_pts = F) {
+  
   #Clear existing data and graphics
-  rm(list=ls())
-  graphics.off()
+  # rm(list=ls())
+  # graphics.off()
   
   #Load libraries
   library(Hmisc)
@@ -109,7 +110,7 @@ do_magic <- function() {
   ADV_EV$AE_SER=factor(ADV_EV$AE_SER,levels=c("0","1"))
   
   #setting factor levels
-  cat("\n - converting labels *.csv")
+  cat("\n - Converting labels *.csv")
   levels(BASELINE$SEX)=c("male","female")
   levels(BASELINE$ETHNIA)=c("caucasian","black or african-american","asian","other")
   levels(BASELINE$EMPL)=c("any or not employed","workman ","office clerk","physician","nurse","healthcare assistant","unfit for work ","student","retired","other")
@@ -368,7 +369,6 @@ do_magic <- function() {
   label(ADV_EV$AE_ONG)="Ongoing"
   label(ADV_EV$AE_SER)="Serious Adverse Event (SAE)"
   
-  
   # check vert
   # count(CRITERIA, PatientCode, name = "c") %>% count(c)
   # count(BASELINE, PatientCode, name = "c") %>% count(c)
@@ -386,6 +386,10 @@ do_magic <- function() {
   # count(MEDICATIONS, PatientCode, name = "c") %>% count(c)
   # count(ADV_EV, PatientCode, name = "c") %>% count(c)
   
+  # add empty pts
+  PATIENTS <- read.csv("_PATIENTS.csv", header=TRUE, sep=";", na.strings = c(".", "NA")) %>% 
+    select(PatientID, PatientCode = Patient_code, EnrollDate, SiteID, Created, CreatedByID, LastUpdate, LastUpdateByID)
+  
   # horizontalize
   FU_1M <- dplyr::rename(FU_1M, 
                          RELAPSE_DATE_FU_1M = RELAPSE_DATE,
@@ -399,6 +403,8 @@ do_magic <- function() {
                               "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
                               "FormInstance", "LastUpdate"))) %>% 
     purrr::reduce(silent_full_join)
+  
+  if(add_empty_pts) { horiz <- full_join(PATIENTS, horiz) }
   
   horiz <- mutate_if(horiz, is.numeric, ~ haven::labelled(., label = attr(., "label")))
   
