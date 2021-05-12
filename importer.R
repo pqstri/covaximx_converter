@@ -387,7 +387,7 @@ do_magic <- function(add_empty_pts = F) {
   # count(ADV_EV, PatientCode, name = "c") %>% count(c)
   
   # add empty pts
-  PATIENTS <- read.csv("_PATIENTS.csv", header=TRUE, sep=";", na.strings = c(".", "NA")) %>% 
+  PATIENTS <- readr::read_delim("_PATIENTS.csv", delim = ";", escape_double = F, na = c(".", "NA"), trim_ws = T) %>% 
     select(PatientID, PatientCode = Patient_code, EnrollDate, SiteID, Created, CreatedByID, LastUpdate, LastUpdateByID)
   
   # horizontalize
