@@ -17,6 +17,7 @@ do_magic <- function(add_empty_pts = F) {
   BASELINE=read.csv("BASELINE.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   CRITERIA=read.csv("CRITERIA.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   MS_HISTORY=read.csv("MS_HISTORY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
+  LYMPHOCYT=read.csv("LYMPHOCYT.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   COM_ALLERGY=read.csv("COM_ALLERGY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   MED_VAX=read.csv("MED_VAX.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   PRIOR_COVID=read.csv("PRIOR_COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
@@ -49,6 +50,7 @@ do_magic <- function(add_empty_pts = F) {
   MS_HISTORY$PREV_DMD=factor(MS_HISTORY$PREV_DMD,levels=c("0","1"))
   MS_HISTORY$PREV_DMD1=factor(MS_HISTORY$PREV_DMD1,levels=c("2","3","4","5","6","7","8","9","10","11","12","13","14","15","99"))
   MS_HISTORY$METH=factor(MS_HISTORY$METH,levels=c("0","1"))
+  LYMPHOCYT$LYMPHO.factor=factor(LYMPHOCYT$LYMPHO,levels=c("1","2","3","4","5","6"))
   COM_ALLERGY$CEREB=factor(COM_ALLERGY$CEREB,levels=c("1","2","3"))
   COM_ALLERGY$KIDN=factor(COM_ALLERGY$KIDN,levels=c("1","2","3"))
   COM_ALLERGY$LIVER=factor(COM_ALLERGY$LIVER,levels=c("1","2","3"))
@@ -128,6 +130,7 @@ do_magic <- function(add_empty_pts = F) {
   levels(MS_HISTORY$PREV_DMD)=c("no","yes")
   levels(MS_HISTORY$PREV_DMD1)=c("alemtuzumab","azatioprina","daclizumab","dimethyl fumarate","glatiramer acetate","fingolimod","interferon","methotrexate","mitoxantrone","natalizumab","ocrelizumab","rituximab","teriflunomide","cladribine","other")
   levels(MS_HISTORY$METH)=c("no","yes")
+  levels(LYMPHOCYT$LYMPHO.factor)=c("Grade 0 (normal: > 1000/mm3)","Grade 1 (800-999/mm3)","Grade 2 (500-799/mm3)","Grade 3 (200-499/mm3)","Grade 4 (<20/mm3)","not available")
   levels(COM_ALLERGY$CEREB)=c("no","yes, not treated","yes, treated")
   levels(COM_ALLERGY$KIDN)=c("no","yes, not treated","yes, treated")
   levels(COM_ALLERGY$LIVER)=c("no","yes, not treated","yes, treated")
@@ -235,6 +238,8 @@ do_magic <- function(add_empty_pts = F) {
   label(MS_HISTORY$METH_START)="From"
   label(MS_HISTORY$METH_STOP)="To"
   label(MS_HISTORY$METH_ONG)="Ongoing"
+  
+  label(LYMPHOCYT$LYMPHO)="Recent lymphocytes counts (within 3 months prior vaccination)"
   
   label(COM_ALLERGY$CEREB)="Cerebrovascular disease "
   label(COM_ALLERGY$KIDN)="Chronic kidney disease "
@@ -398,7 +403,7 @@ do_magic <- function(add_empty_pts = F) {
   silent_full_join <- function(x, y) {suppressMessages(full_join(x, y))} 
   
   cat("\n - Merging")
-  horiz <- list(BASELINE, MS_HISTORY, COM_ALLERGY, MED_VAX, PRIOR_COVID, V_DAY, BLOOD, TC_VAX, FU_1M, CRITERIA) %>% 
+  horiz <- list(BASELINE, MS_HISTORY, LYMPHOCYT, COM_ALLERGY, MED_VAX, PRIOR_COVID, V_DAY, BLOOD, TC_VAX, FU_1M, CRITERIA) %>% 
     purrr::map(~ select(., -c("PatientStatus", "VisitID", "VisitCode", 
                               "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
                               "FormInstance", "LastUpdate"))) %>% 
