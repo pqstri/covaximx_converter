@@ -9,6 +9,7 @@ do_magic <- function(add_empty_pts = F) {
   #Load libraries
   library(Hmisc)
   library(tidyverse)
+  library(lubridate)
   library(haven)
   library(openxlsx)
   
@@ -393,6 +394,7 @@ do_magic <- function(add_empty_pts = F) {
   
   # add empty pts
   PATIENTS <- readr::read_delim("_PATIENTS.csv", delim = ";", escape_double = F, na = c(".", "NA"), trim_ws = T) %>% 
+    suppressMessages() %>% 
     select(PatientID, PatientCode = Patient_code, EnrollDate, SiteID, Created, CreatedByID, LastUpdate, LastUpdateByID)
   
   # horizontalize
@@ -412,6 +414,52 @@ do_magic <- function(add_empty_pts = F) {
   if(add_empty_pts) { horiz <- full_join(PATIENTS, horiz) }
   
   horiz <- mutate_if(horiz, is.numeric, ~ haven::labelled(., label = attr(., "label")))
+  
+  
+  cat("\n - Converting dates")
+  date_cols <- names(select(horiz, DIC, contains("DOV_"), contains("DATE"), matches("_START$"), matches("_STOP$")))
+  
+  impute_day <- function(d, m, y) {
+    if (is.na(d)) { return(c("15", m, y)) } else { return(c(d, m, y))}
+  }
+  
+  date_parser <- function(string_date) {
+    if (is.na(string_date)) { return(NA_Date_) }
+    
+    if(!grepl("-|/", string_date)) {cat("problem parsing ", string_date); return(NA_Date_)}
+    
+    if(grepl("/", string_date)) { return(lubridate::dmy(string_date)) }
+    if(grepl("-", string_date)) {
+      elem <- str_split(string_date, "-", n = 3)[[1]]
+      if (length(elem) == 3) {names(elem) <- c("y", "m", "d")}
+      if (length(elem) == 2) {
+        names(elem) <- c("y", "m")
+        elem['d'] <- NA_Date_
+      }
+      if (length(elem) == 1) {
+        names(elem) <- c("y")
+        elem['d'] <- NA_Date_
+        elem['m'] <- NA_Date_
+      }
+    }
+    
+    parsed_date <- as.data.frame(t(elem))
+    # parsed_date
+    filled_date <- impute_day(parsed_date$d, parsed_date$m, parsed_date$y)
+    
+    lubridate::dmy(sprintf("%s-%s-%s", filled_date[1], filled_date[2], filled_date[3]))
+  }
+  
+  parse_date <- function(dates) {map(dates, date_parser) %>% do.call('c', .)}
+  
+  
+  horiz <- horiz %>% 
+    mutate_at(.vars = vars(all_of(date_cols)), 
+              .funs = list(`_dateFormat` = parse_date))
+  
+  # double check
+  # horiz %>% select(all_of(date_cols), all_of(paste0(date_cols, "__dateFormat"))) %>% select({order(names(.))}) %>% View()
+  
   
   cat("\n  DONE!")
   return(horiz)
