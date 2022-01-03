@@ -24,8 +24,10 @@ do_magic <- function(add_empty_pts = F) {
   PRIOR_COVID=read.csv("PRIOR_COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   V_DAY=read.csv("V_DAY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   BLOOD=read.csv("BLOOD.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
+  BLOOD_3DOSE=read.csv("BLOOD_3DOSE.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   TC_VAX=read.csv("TC_VAX.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   FU_1M=read.csv("FU_1M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
+  FU_6M_12M=read.csv("FU_6M_12M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   TC_18M=read.csv("TC_18M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   MEDICATIONS=read.csv("MEDICATIONS.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
   COVID=read.csv("COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
@@ -87,6 +89,16 @@ do_magic <- function(add_empty_pts = F) {
   BLOOD$BLOOD1_ANC=factor(BLOOD$BLOOD1_ANC,levels=c("0","1"))
   BLOOD$BLOODINTERM_ANC=factor(BLOOD$BLOODINTERM_ANC,levels=c("0","1"))
   BLOOD$BLOOD2_ANC=factor(BLOOD$BLOOD2_ANC,levels=c("0","1"))
+  BLOOD_3DOSE$VAX_NAME.factor=factor(BLOOD_3DOSE$VAX_NAME,levels=c("1","2","3","4","5","99"))
+  BLOOD_3DOSE$SIDE_EFF01.factor=factor(BLOOD_3DOSE$SIDE_EFF01,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF02.factor=factor(BLOOD_3DOSE$SIDE_EFF02,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF03.factor=factor(BLOOD_3DOSE$SIDE_EFF03,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF04.factor=factor(BLOOD_3DOSE$SIDE_EFF04,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF05.factor=factor(BLOOD_3DOSE$SIDE_EFF05,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF06.factor=factor(BLOOD_3DOSE$SIDE_EFF06,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF07.factor=factor(BLOOD_3DOSE$SIDE_EFF07,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF08.factor=factor(BLOOD_3DOSE$SIDE_EFF08,levels=c("0","1"))
+  BLOOD_3DOSE$SIDE_EFF09.factor=factor(BLOOD_3DOSE$SIDE_EFF09,levels=c("0","1"))
   TC_VAX$AE_TCVAX=factor(TC_VAX$AE_TCVAX,levels=c("0","1"))
   TC_VAX$COVID_TCVAX=factor(TC_VAX$COVID_TCVAX,levels=c("0","1"))
   TC_VAX$TRT_TCVAX=factor(TC_VAX$TRT_TCVAX,levels=c("0","1"))
@@ -99,6 +111,13 @@ do_magic <- function(add_empty_pts = F) {
   FU_1M$AE_FU1=factor(FU_1M$AE_FU1,levels=c("0","1"))
   FU_1M$COVID_FU1=factor(FU_1M$COVID_FU1,levels=c("0","1"))
   FU_1M$TRT_FU1=factor(FU_1M$TRT_FU1,levels=c("0","1"))
+  FU_6M_12M$DMD_CHANGE_FU6M.factor=factor(FU_6M_12M$DMD_CHANGE_FU6M,levels=c("0","1"))
+  FU_6M_12M$DMD_INTER.factor=factor(FU_6M_12M$DMD_INTER,levels=c("0","1"))
+  FU_6M_12M$NEW_DMD.factor=factor(FU_6M_12M$NEW_DMD,levels=c("0","1"))
+  FU_6M_12M$NEW_DMD1.factor=factor(FU_6M_12M$NEW_DMD1,levels=c("2","3","4","5","6","7","8","9","10","11","12","13","14","15","99"))
+  FU_6M_12M$RELAPSE_FUP6M.factor=factor(FU_6M_12M$RELAPSE_FUP6M,levels=c("0","1"))
+  FU_6M_12M$RELAPSE_ACT.factor=factor(FU_6M_12M$RELAPSE_ACT,levels=c("0","1"))
+  FU_6M_12M$AE_FU6M.factor=factor(FU_6M_12M$AE_FU6M,levels=c("0","1"))
   TC_18M$AE_TC18=factor(TC_18M$AE_TC18,levels=c("0","1"))
   TC_18M$COVID_TC18=factor(TC_18M$COVID_TC18,levels=c("0","1"))
   TC_18M$TRT_TC18=factor(TC_18M$TRT_TC18,levels=c("0","1"))
@@ -167,6 +186,16 @@ do_magic <- function(add_empty_pts = F) {
   levels(BLOOD$BLOOD1_ANC)=c("no","yes")
   levels(BLOOD$BLOODINTERM_ANC)=c("no","yes")
   levels(BLOOD$BLOOD2_ANC)=c("no","yes")
+  levels(BLOOD_3DOSE$VAX_NAME.factor)=c("AstraZeneca","Johnson & Johnson","Moderna","Pfizer/BioNTec","Sputnik V","Other")
+  levels(BLOOD_3DOSE$SIDE_EFF01.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF02.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF03.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF04.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF05.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF06.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF07.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF08.factor)=c("no","yes")
+  levels(BLOOD_3DOSE$SIDE_EFF09.factor)=c("no","yes")
   levels(TC_VAX$AE_TCVAX)=c("no","yes")
   levels(TC_VAX$COVID_TCVAX)=c("no","yes")
   levels(TC_VAX$TRT_TCVAX)=c("no","yes")
@@ -179,6 +208,13 @@ do_magic <- function(add_empty_pts = F) {
   levels(FU_1M$AE_FU1)=c("no","yes")
   levels(FU_1M$COVID_FU1)=c("no","yes")
   levels(FU_1M$TRT_FU1)=c("no","yes")
+  levels(FU_6M_12M$DMD_CHANGE_FU6M.factor)=c("no","yes")
+  levels(FU_6M_12M$DMD_INTER.factor)=c("no","yes")
+  levels(FU_6M_12M$NEW_DMD.factor)=c("no","yes")
+  levels(FU_6M_12M$NEW_DMD1.factor)=c("alemtuzumab","azathioprine","daclizumab","dimethyl fumarate","glatiramer acetate","fingolimod","interferon","methotrexate","mitoxantrone","natalizumab","ocrelizumab","rituximab","teriflunomide","cladribine","other")
+  levels(FU_6M_12M$RELAPSE_FUP6M.factor)=c("no","yes")
+  levels(FU_6M_12M$RELAPSE_ACT.factor)=c("no","yes")
+  levels(FU_6M_12M$AE_FU6M.factor)=c("no","yes")
   levels(TC_18M$AE_TC18)=c("no","yes")
   levels(TC_18M$COVID_TC18)=c("no","yes")
   levels(TC_18M$TRT_TC18)=c("no","yes")
@@ -313,6 +349,28 @@ do_magic <- function(add_empty_pts = F) {
   label(BLOOD$ANTIB_SECOND_2N)="SARS-CoV-2-N antibodies [U/mL]"
   label(BLOOD$BLOOD2_ANC)="Blood sample for immunological ancillary study "
   
+  label(BLOOD_3DOSE$BLOOD3_DATE)="Date of blood sample collection at 6-12 months after the last dose (or just before the third dose) "
+  label(BLOOD_3DOSE$NO_BLOOD3)="Not executed"
+  label(BLOOD_3DOSE$ANTIB_THIRD)="SARS-CoV-2-S antibodies [U/mL]"
+  label(BLOOD_3DOSE$ANTIB_THIRD_2N)="SARS-CoV-2-N antibodies [U/mL]"
+  label(BLOOD_3DOSE$DOSE3_DATE)="Date of third vaccine dose "
+  label(BLOOD_3DOSE$NO_VAX3)="Not executed"
+  label(BLOOD_3DOSE$VAX_NAME)="Vaccine product"
+  label(BLOOD_3DOSE$SIDE_EFF01)="Injection site pain"
+  label(BLOOD_3DOSE$SIDE_EFF02)="Swelling / redness"
+  label(BLOOD_3DOSE$SIDE_EFF03)="Asthenia / fatigue"
+  label(BLOOD_3DOSE$SIDE_EFF04)="Headache"
+  label(BLOOD_3DOSE$SIDE_EFF05)="Chills"
+  label(BLOOD_3DOSE$SIDE_EFF06)="Myalgia"
+  label(BLOOD_3DOSE$SIDE_EFF07)="Fever (greater than 37.5 ° C)"
+  label(BLOOD_3DOSE$SIDE_EFF08)="Nausea, vomiting"
+  label(BLOOD_3DOSE$SIDE_EFF09)="Intestinal disorders"
+  label(BLOOD_3DOSE$SIDE_EFF_OTH)="Other, specify"
+  label(BLOOD_3DOSE$BLOOD3P_DATE)="Date of blood sample collection (one month post third dose) "
+  label(BLOOD_3DOSE$NO_BLOOD3P)="Not executed"
+  label(BLOOD_3DOSE$ANTIB_THIRD_P)="SARS-CoV-2-S antibodies [U/mL]"
+  label(BLOOD_3DOSE$ANTIB_THIRD_P_2N)="SARS-CoV-2-N antibodies [U/mL]"
+  
   label(TC_VAX$DOV_TCVAX)="Date of contact "
   label(TC_VAX$AE_TCVAX)="Does the patient experience any adverse event since the baseline visit? "
   label(TC_VAX$COVID_TCVAX)="Does the patient experienced SARS-CoV-2 infection since the baseline visit? "
@@ -343,6 +401,28 @@ do_magic <- function(add_empty_pts = F) {
   label(FU_1M$AE_FU1)="Does the patient experience any adverse event since the last phone contact? "
   label(FU_1M$COVID_FU1)="Does the patient experienced SARS-CoV-2 infection since the last phone contact? "
   label(FU_1M$TRT_FU1)="Does the patient start a new treatment or modify an ongoing treatment since the last phone contact?"
+  
+  label(FU_6M_12M$DOV_FU6M)="Date of visit "
+  label(FU_6M_12M$DMD_CHANGE_FU6M)="Any change in DMD compared to previous visit? "
+  label(FU_6M_12M$DMD_INTER)="Previous DMD interrupted "
+  label(FU_6M_12M$DATE_INTERR)="Date of interruption "
+  label(FU_6M_12M$REASON_INTERR01)="for COVID"
+  label(FU_6M_12M$REASON_INTERR02)="end of the therapeutic cycle"
+  label(FU_6M_12M$REASON_INTERR03)="lack of efficacy"
+  label(FU_6M_12M$REASON_INTERR04)="patient's decision"
+  label(FU_6M_12M$REASON_INTERR05)="pregnancy"
+  label(FU_6M_12M$REASON_INTERR06)="pregnancy planning"
+  label(FU_6M_12M$REASON_INTERR07)="adverse event or side effect"
+  label(FU_6M_12M$REASON_INTERR08)="other"
+  label(FU_6M_12M$OTHER_REASON)="If 'other', specify "
+  label(FU_6M_12M$NEW_DMD)="New DMD"
+  label(FU_6M_12M$DMD_STARTFU1)="Start date of new DMD "
+  label(FU_6M_12M$NEW_DMD1)="Name of new DMD "
+  label(FU_6M_12M$NEW_DMD1_OTH)="If 'other', specify "
+  label(FU_6M_12M$RELAPSE_FUP6M)="Any new relapse since the last visit?"
+  label(FU_6M_12M$RELAPSE_DATE)="If 'yes', start date "
+  label(FU_6M_12M$RELAPSE_ACT)="Relapse still active "
+  label(FU_6M_12M$AE_FU6M)="Does the patient experience SARS-CoV-2 infection since the last visit? "
   
   label(TC_18M$DOV_TC18)="Date of visit "
   label(TC_18M$AE_TC18)="Does the patient experience any adverse event since the last visit? "
@@ -398,17 +478,22 @@ do_magic <- function(add_empty_pts = F) {
     select(PatientID, PatientCode = Patient_code, EnrollDate, SiteID, Created, CreatedByID, LastUpdate, LastUpdateByID)
   
   # horizontalize
-  FU_1M <- dplyr::rename(FU_1M, 
-                         RELAPSE_DATE_FU_1M = RELAPSE_DATE,
-                         RELAPSE_ACT_FU_1M = RELAPSE_ACT)
+  silent_full_join <- function(x, y) {suppressMessages(full_join(x, y, by = c("PatientID", "PatientCode")))} 
   
-  silent_full_join <- function(x, y) {suppressMessages(full_join(x, y))} 
+  # duplicate var name fix
+  common_form_vars <- c("PatientStatus", "VisitID", "VisitCode", 
+                        "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
+                        "FormInstance", "LastUpdate")
+  
+  BLOOD_3DOSE <- dplyr::rename_at(BLOOD_3DOSE, vars(contains("VAX_NAME"), contains("side_eff")), ~paste0("3DOSE___", .))
+  FU_1M <- dplyr::rename_at(FU_1M, vars(contains("RELAPSE_DATE"), contains("RELAPSE_ACT")), ~paste0("FU_1M___", .))
+  
+  fup_vars <- setdiff(intersect(names(FU_6M_12M), names(FU_1M)), c(common_form_vars, "PatientID", "PatientCode"))
+  FU_6M_12M   <- dplyr::rename_at(FU_6M_12M, vars(contains("RELAPSE_DATE"), contains("RELAPSE_ACT"), all_of(fup_vars)), ~paste0("FU_6M_12M___", .))
   
   cat("\n - Merging")
-  horiz <- list(BASELINE, MS_HISTORY, LYMPHOCYT, COM_ALLERGY, MED_VAX, PRIOR_COVID, V_DAY, BLOOD, TC_VAX, FU_1M, CRITERIA) %>% 
-    purrr::map(~ select(., -c("PatientStatus", "VisitID", "VisitCode", 
-                              "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
-                              "FormInstance", "LastUpdate"))) %>% 
+  horiz <- list(BASELINE, MS_HISTORY, LYMPHOCYT, COM_ALLERGY, MED_VAX, PRIOR_COVID, V_DAY, BLOOD, TC_VAX, FU_1M, CRITERIA, BLOOD_3DOSE, FU_6M_12M) %>% 
+    purrr::map(~ select(., -all_of(common_form_vars))) %>% 
     purrr::reduce(silent_full_join)
   
   if(add_empty_pts) { horiz <- full_join(PATIENTS, horiz) }
