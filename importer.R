@@ -15,23 +15,24 @@ do_magic <- function(add_empty_pts = F) {
   
   #read Data
   cat("\n - Reading *.csv")
-  BASELINE=read.csv("BASELINE.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  CRITERIA=read.csv("CRITERIA.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  MS_HISTORY=read.csv("MS_HISTORY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  LYMPHOCYT=read.csv("LYMPHOCYT.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  COM_ALLERGY=read.csv("COM_ALLERGY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  MED_VAX=read.csv("MED_VAX.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  PRIOR_COVID=read.csv("PRIOR_COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  V_DAY=read.csv("V_DAY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  BLOOD=read.csv("BLOOD.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  BLOOD_3DOSE=read.csv("BLOOD_3DOSE.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  TC_VAX=read.csv("TC_VAX.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  FU_1M=read.csv("FU_1M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  FU_6M_12M=read.csv("FU_6M_12M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  TC_18M=read.csv("TC_18M.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  MEDICATIONS=read.csv("MEDICATIONS.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  COVID=read.csv("COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
-  ADV_EV=read.csv("ADV_EV.csv", header=TRUE, sep=";", na.strings = c(".", "NA"))
+  BASELINE=read.csv("BASELINE.csv",       header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  CRITERIA=read.csv("CRITERIA.csv",       header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  MS_HISTORY=read.csv("MS_HISTORY.csv",   header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  LYMPHOCYT=read.csv("LYMPHOCYT.csv",     header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  COM_ALLERGY=read.csv("COM_ALLERGY.csv", header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  MED_VAX=read.csv("MED_VAX.csv",         header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  PRIOR_COVID=read.csv("PRIOR_COVID.csv", header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  V_DAY=read.csv("V_DAY.csv",             header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  BLOOD=read.csv("BLOOD.csv",             header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  BLOOD_3DOSE=read.csv("BLOOD_3DOSE.csv", header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  TC_VAX=read.csv("TC_VAX.csv",           header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  FU_1M=read.csv("FU_1M.csv",             header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  FU_6M_12M=read.csv("FU_6M_12M.csv",     header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  TC_18M=read.csv("TC_18M.csv",           header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  MEDICATIONS=read.csv("MEDICATIONS.csv", header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  COVID=read.csv("COVID.csv",             header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  ADV_EV=read.csv("ADV_EV.csv",           header=TRUE, sep=";", na.strings = c(".", "NA"), fileEncoding = "UTF-8-BOM")
+  
   
   
   #setting factors
@@ -485,7 +486,7 @@ do_magic <- function(add_empty_pts = F) {
                         "VisitStatus", "VisitInstance", "FormID", "FormCode", "FormStatus", 
                         "FormInstance", "LastUpdate")
   
-  BLOOD_3DOSE <- dplyr::rename_at(BLOOD_3DOSE, vars(contains("VAX_NAME"), contains("side_eff")), ~paste0("3DOSE___", .))
+  BLOOD_3DOSE <- dplyr::rename_at(BLOOD_3DOSE, vars(contains("VAX_NAME"), contains("side_eff")), ~paste0("DOSE3___", .))
   FU_1M <- dplyr::rename_at(FU_1M, vars(contains("RELAPSE_DATE"), contains("RELAPSE_ACT")), ~paste0("FU_1M___", .))
   
   fup_vars <- setdiff(intersect(names(FU_6M_12M), names(FU_1M)), c(common_form_vars, "PatientID", "PatientCode"))
@@ -556,5 +557,4 @@ do_magic <- function(add_empty_pts = F) {
 # export
 # haven::write_sav(horiz, format(Sys.time(), "CovaxiMS_%d%b%Y_%He%M.sav"))
 # openxlsx::write.xlsx(horiz, format(Sys.time(), "CovaxiMS_%d%b%Y_%He%M.xlsx"))
-
 
